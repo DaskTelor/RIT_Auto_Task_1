@@ -20,11 +20,11 @@ namespace Task_1
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            MainForm mainForm = new MainForm();
+            MarkerDatabase markerDatabase = new MarkerDatabase(logger: new FileLogger());
+            MainViewModel mainViewModel = new MainViewModel(markerDatabase);
+            MainForm mainForm = new MainForm(mainViewModel);
 
             Application.Run(mainForm);
-
-            
         }
     }
 }

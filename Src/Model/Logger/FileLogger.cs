@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Task_1
 {
-    internal class FileLogger : LoggerBase
+    public class FileLogger : LoggerBase
     {
         private readonly string _fileName;
         public FileLogger(string fileName = "logs.log") 
@@ -16,7 +16,7 @@ namespace Task_1
         }
         public override void Log(string str, LogType type)
         {
-            File.AppendAllText( _fileName, "[" + DateTime.Now + "]" + _logTypeStrings[(int)type] + ": [" + str + "]" + Environment.NewLine);
+            File.AppendAllText( _fileName, "[" + DateTime.Now + "] " + _logTypeStrings[(int)type] + ": [" + str + "]" + Environment.NewLine);
         }
     }
 }

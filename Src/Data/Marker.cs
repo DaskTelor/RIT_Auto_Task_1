@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Task_1
 {
-    internal class Marker
+    public class Marker
     {
         public Marker(int id, double lat, double lng) { Id = id; Lat = lat; Lng = lng; }
         public Marker(Marker marker) { Id = marker.Id; Lat = marker.Lat; Lng = marker.Lng; }

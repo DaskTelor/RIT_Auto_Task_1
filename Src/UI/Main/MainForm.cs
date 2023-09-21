@@ -11,21 +11,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static GMap.NET.Entity.OpenStreetMapGraphHopperGeocodeEntity;
 
 namespace Task_1
 {
     public partial class MainForm : Form
     {
         private Size _marginSize;
+        private MainViewModel _viewModel;
         private GMapOverlay _markersOverlay;
-        private ObservableCollectionThreadSafe<Marker> _markersValues;
-        private MarkerDatabase _dataBase;
-        public MainForm()
+        private GMapMarker _targetMarkerDragDrop;
+        private bool _dragStatusActive = false;
+
+        public MainForm(MainViewModel viewModel)
         {
-            _dataBase = new MarkerDatabase();
-            _markersValues = new ObservableCollectionThreadSafe<Marker>();
             InitializeComponent();
+            _viewModel = viewModel;
         }
         private async void gMapControlMain_Load(object sender, EventArgs e)
         {
@@ -43,17 +43,15 @@ namespace Task_1
             gMapControlMain.Position = new PointLatLng(54.59568572, 82.57211176); // Russia, Novosibirsk
             gMapControlMain.MouseWheelZoomType = MouseWheelZoomType.MousePositionWithoutCenter;
             gMapControlMain.CanDragMap = true;
-            gMapControlMain.DragButton = MouseButtons.Left;
+            gMapControlMain.DragButton = MouseButtons.Right;
             gMapControlMain.ShowCenter = false;
             gMapControlMain.ShowTileGridLines = false;
 
-            _markersValues.CollectionChanged += _markersValues_CollectionChanged;
-
-            foreach (Marker item in await _dataBase.GetAllMarkersAsync())
-                _markersValues.Add(item);
+            _viewModel.AddMarkersCollectionChangedEventHandler(markersValues_CollectionChanged);
+            await _viewModel.LoadAllMarkerAsync();
         }
 
-        private void _markersValues_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void markersValues_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -80,18 +78,48 @@ namespace Task_1
                 gMapControlMain.Size = mainForm.Size - _marginSize;
         }
 
-        private async void gMapControlMain_MouseDown(object sender, MouseEventArgs e)
+        private void gMapControlMain_OnMarkerEnter(GMapMarker item)
         {
-
+            if (!_dragStatusActive)
+            {
+                _targetMarkerDragDrop = item;
+            } else
+            {
+                gMapControlMain.Cursor = Cursors.Hand;
+            }
         }
 
-        private async void gMapControlMain_OnMarkerClick(GMapMarker item, MouseEventArgs e)
+        private void gMapControlMain_OnMarkerLeave(GMapMarker item)
         {
-            int index = _markersOverlay.Markers.IndexOf(item);
-            Marker newMarker = new Marker(_markersValues[index]);
-            newMarker.Lng += 3;
-            _markersValues[index] = newMarker;
-            await _dataBase.UpdateMarkerAsync(newMarker);
+            if (!_dragStatusActive && item.Equals(_targetMarkerDragDrop))
+            {
+                _targetMarkerDragDrop = null;
+            }
+            if (_dragStatusActive)
+            {
+                gMapControlMain.Cursor = Cursors.Hand;
+            }
+        }
+
+        private void gMapControlMain_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left && _targetMarkerDragDrop != null)
+            {
+                gMapControlMain.Cursor = Cursors.Hand;
+                _dragStatusActive = true;
+            }
+        }
+
+        private async void gMapControlMain_MouseUp(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Left && _targetMarkerDragDrop != null && _dragStatusActive)
+            {
+                await _viewModel.UpdateMarker(
+                    _markersOverlay.Markers.IndexOf(_targetMarkerDragDrop),
+                    gMapControlMain.FromLocalToLatLng(e.X, e.Y));
+                gMapControlMain.Cursor = Cursors.Default;
+                _dragStatusActive = false;
+            }
         }
     }
 }

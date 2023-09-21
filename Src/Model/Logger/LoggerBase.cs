@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Task_1
 {
-    internal abstract class LoggerBase
+    public abstract class LoggerBase
     {
         public enum LogType
         {
