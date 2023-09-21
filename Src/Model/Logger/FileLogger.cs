@@ -14,9 +14,9 @@ namespace Task_1
         {
             _fileName = fileName;
         }
-        public override void Log(string str)
+        public override void Log(string str, LogType type)
         {
-            File.AppendAllText( _fileName, "[" + DateTime.Now + "]" + ": [" + str + "]" + Environment.NewLine);
+            File.AppendAllText( _fileName, "[" + DateTime.Now + "]" + _logTypeStrings[(int)type] + ": [" + str + "]" + Environment.NewLine);
         }
     }
 }

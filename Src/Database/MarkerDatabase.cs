@@ -40,15 +40,15 @@ namespace Task_1
             }
             catch (SqlException ex)
             {
-                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}");
+                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}", LoggerBase.LogType.WARN);
             }
             catch (InvalidOperationException ex)
             {
-                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}");
+                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}", LoggerBase.LogType.WARN);
             }
             catch (InvalidCastException ex)
             {
-                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}");
+                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}", LoggerBase.LogType.WARN);
             }
             finally
             {
@@ -68,11 +68,11 @@ namespace Task_1
             }
             catch (SqlException ex)
             {
-                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}");
+                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}", LoggerBase.LogType.WARN);
             }
             catch (InvalidOperationException ex)
             {
-                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}");
+                _logger.Log(ex.GetType().FullName + " {" + ex.Message + "}", LoggerBase.LogType.WARN);
             }
             finally
             {
